@@ -40,7 +40,7 @@
         </button>
     </div>
     <div class="container-fluid">
-        <form action="/analyze" method="post"> {% csrf_token %}
+        <form action="/analyze" method="post"{% csrf_token %} >
             <h4>Enter your text here and let mysite do the magic...</h4>
             <div class="form-group">
                 <textarea class="form-control" name=text id="exampleFormControlTextarea1" rows="9"></textarea>
