@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render
+from shop.models import Product
 
 # Create your views here.
 def index(request):
@@ -8,7 +9,7 @@ def index(request):
 
 
 def about(request):
-    return render(request,'shop/index.html')
+    return render(request,'shop/about.html')
 
 
 def contact(request):
