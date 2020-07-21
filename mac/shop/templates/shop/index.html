@@ -2,6 +2,28 @@
 
 {% block title %} My Awesome Cart {% endblock %}
 {% block css %}
+
+
+
+
+.carousel-indicators {
+position: absolute;
+right: 0;
+bottom: -99px;
+left: 0;
+z-index: 46;
+display: -ms-flexbox;
+display: flex;
+-ms-flex-pack: center;
+justify-content: center;
+padding-left: 4px;
+margin-right: 0%;
+margin-left: 0%;
+list-style: none;
+margin-bottom: -13px;
+}
+
+
 .col-md-3
 {
 display: inline-block;
@@ -12,10 +34,6 @@ margin-left:-4px;
 background-color: blue;
 }
 
-.col-md-3 img{
-width: 180px;
-max-height: 81px 
-}
 
 body .carousel-indicator li{
 background-color: blue;
@@ -73,10 +91,32 @@ font-weight: 500;
 line-height: 1.2;
 }
 
+.card-body {
+-ms-flex: 1 1 auto;
+flex: 1 1 auto;
+min-height: 1px;
+padding: 0.25rem;
+width: 258px;
+}
+element.style {
+margin-bottom: -36px;
+}
+
+.col-md-3 img {
+width: 217px;
+max-height: 148px;
+}
+
 .h3, h3 {
 font-size: 1.75rem;
-padding-left: inherit;
+padding-left: inherit;}
+
+
+
+
 {% endblock %}
+
+
 
 {% block body %}
 
@@ -103,12 +143,16 @@ padding-left: inherit;
 
           {% for i in products %}
           <div class="col-xs-3 col-sm-3 col-md-3">
-            <div class="card" style="width: 18rem;">
+            <div class="card align-item-center" style="width: 18rem;">
               <img src="/media/{{i.img}}" class="card-img-top" alt="...">
               <div class="card-body">
                 <h5 class="card-title">{{i.product_name}}</h5>
-                <p class="card-text">{{i.desc}}</p>
-                <button id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</button>
+                <p class="card-text">{{i.desc|slice:"0:30"}}.........</p>
+                <span id='divpr{{i.id}}' class="divpr">
+                  <button id="pr{{i.id}}" class="btn btn-primary cart">Add to Cart</button>
+                </span>
+                <a href="/shop/prodview/{{i.id}}"><button id="qv{{i.id}}" class="btn btn-primary">Quick
+                    View</button></a>
               </div>
             </div>
           </div>
@@ -137,40 +181,78 @@ padding-left: inherit;
 </div>
 {%endblock%}
 
+
 {% block js %}
 <script>
 
-  console.log("Working");
+
+
+
+  // find out the cart's item from local storage
   if (localStorage.getItem('cart') == null) {
     var cart = {}
   }
   else {
     cart = JSON.parse(localStorage.getItem('cart'))
     document.getElementById('cart').innerHTML = Object.keys(cart).length;   //(to set cart length in html)  when we load page
+    updateCart(cart);
+
   }
 
+
+  // if add to cart button is clicked, add/increment item
   $('.cart').click(function () {
-    console.log('clicked');
     var idstr = this.id.toString()
-    console.log(idstr)
+    // console.log(idstr)
     if (cart[idstr] != undefined) {
       cart[idstr] += 1
     }
     else {
       cart[idstr] = 1
     }
+    updateCart(cart);
+    // console.log(cart);
+   });
+  // We have selected cart(selector)
+
+
+
+  //add for popover to cart
+  $('#popcart').popover();
+  document.getElementById("popcart").setAttribute('data-content', "<h6> Cart for Your Items...</h6>");
+
+
+
+  function updateCart(cart) {
     console.log(cart);
+    for (var item in cart) {
+      document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "'class='btn btn-primary minus'> - </button> <span id='val" + item + "''>" + cart[item] + "</span> <button id='pluse" + item + "'class='btn btn-primary plus'> + </button>";
+    }
     localStorage.setItem('cart', JSON.stringify(cart));
     document.getElementById('cart').innerHTML = Object.keys(cart).length;     //(to set cart length in html)  when we click on add iyem to cart
-  });
-// We have selected cart(selector)
+  
+  }
 
+  // if plus or minus button is clicked, change the cart and display values
+$('.divpr').on("click",'button.minus', function(){
+  // console.log("minus clicked")
+  // a=this.id     (this will print id of clicked item  like minuspr1)
+  a=this.id.slice(5, )    // this will print pr1 because we used slicing
+  // console.log(a)
+  cart[a]-=1
+  cart[a]=Math.max(0,cart[a] )
+  document.getElementById('val'+a).innerHTML=cart[a];
+  updateCart(cart);
+});
 
-
-//for popover
-$('#popcart').popover();   
-
-document.getElementById("popcart").setAttribute('data-content',"<h6> Cart for Your Items...</h6>");
+$('.divpr').on("click",'button.plus', function(){
+  // console.log("plus clicked")
+  // a=this.id     //(this will print id of clicked item  like plusepr3)
+  a=this.id.slice(5, )    // this will print pr1 because we used slicing
+  // console.log(a)
+  cart[a]+=1
+  document.getElementById('val'+a).innerHTML=cart[a];
+  updateCart(cart);
+});
 </script>
-
 {%endblock%}

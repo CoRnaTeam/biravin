@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render
-from shop.models import Product
+from shop.models import Product, Contact
 from math import ceil
 
 
@@ -37,6 +37,14 @@ def about(request):
 
 
 def contact(request):
+    if request.method=="POST":
+        name=request.POST.get('name','')
+        email=request.POST.get('email','')
+        phone=request.POST.get('phone','')
+        desc=request.POST.get('desc','')
+        # add to contact table in database
+        contact=Contact(name=name, email=email, phone=phone, desc=desc)
+        contact.save()
     return render(request,'shop/contact.html')
 
 
@@ -48,8 +56,12 @@ def search(request):
     return render(request,'shop/search.html')
 
 
-def prodview(request):
-    return render(request,'shop/prodview.html')
+def prodview(request,myid):
+    # Fetch products using id
+    prod=Product.objects.filter(id=myid)
+    print(prod)
+
+    return render(request,'shop/prodview.html',{'product':prod[0]})
 
 
 def checkout(request):
